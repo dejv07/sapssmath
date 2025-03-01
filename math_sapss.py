@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt, get_jwt_identity
 from flask_cors import CORS
+from flask_cors import cross_origin
 import os
 
 # Inicializace aplikace
@@ -111,9 +112,10 @@ def get_homework():
 
 @app.route('/add_problem', methods=['POST'])
 @jwt_required()
+@cross_origin()  # Povolení CORS pro tuto API cestu
 def add_problem():
     data = request.get_json()
-    
+
     current_user = get_jwt_identity()
     user = User.query.filter_by(username=current_user).first()
 
@@ -126,7 +128,7 @@ def add_problem():
         answer=data['answer'],
         created_by=user.id
     )
-    
+
     db.session.add(new_problem)
     db.session.commit()
     return jsonify({'message': 'Problem added successfully'}), 201
