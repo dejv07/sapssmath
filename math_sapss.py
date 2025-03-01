@@ -37,7 +37,11 @@ def login():
         access_token = create_access_token(identity={'username': user.username, 'role': user.role})
         return jsonify(access_token=access_token), 200
     return jsonify({'message': 'Invalid credentials'}), 401
-
+    
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({'message': 'API is running'}), 200
+    
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
