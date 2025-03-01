@@ -6,8 +6,9 @@ from flask_cors import CORS
 import os
 
 # Inicializace aplikace
+
 app = Flask(__name__)
-CORS(app)  # Povolení komunikace s frontendem
+CORS(app, resources={r"/*": {"origins": "*"}})  # Povolení všech domén
 
 # Konfigurace databáze
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///math_tasks.db'
