@@ -16,6 +16,8 @@ import random
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///math_tasks.db'
 app.config['JWT_SECRET_KEY'] = 'supersecretkey'
+app.config['PORT'] = os.getenv('PORT', 5000)  # Přidání PORT proměnné
+
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
@@ -63,7 +65,7 @@ def login():
         access_token = create_access_token(identity={'username': user.username, 'role': user.role})
         return jsonify(access_token=access_token), 200
     return jsonify({'message': 'Invalid credentials'}), 401
-
+    
 @app.route('/math_problems', methods=['POST'])
 @jwt_required()
 def add_math_problem():
@@ -145,4 +147,4 @@ def grade_homework():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(app.config['PORT']), debug=True)  # Opravený binding portu
