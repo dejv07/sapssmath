@@ -11,12 +11,13 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+import os
 import random
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///math_tasks.db'
 app.config['JWT_SECRET_KEY'] = 'supersecretkey'
-app.config['PORT'] = os.getenv('PORT', 5000)  # Přidání PORT proměnné
+app.config['PORT'] = int(os.getenv('PORT', 5000))  # Přidání PORT proměnné
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -147,4 +148,4 @@ def grade_homework():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=int(app.config['PORT']), debug=True)  # Opravený binding portu
+    app.run(host='0.0.0.0', port=app.config['PORT'], debug=True)  # Opravený binding portu
