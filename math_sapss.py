@@ -27,8 +27,9 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(10), nullable=False)  # 'student' nebo 'teacher'
 
-# Model matematického příkladu
+# Model matematického příkladu (název tabulky musí být správně odkazován)
 class MathProblem(db.Model):
+    __tablename__ = 'math_problem'  # Explicitně pojmenuj tabulku
     id = db.Column(db.Integer, primary_key=True)
     difficulty = db.Column(db.String(10), nullable=False)  # 'easy', 'medium', 'hard'
     question = db.Column(db.Text, nullable=False)
@@ -39,7 +40,7 @@ class MathProblem(db.Model):
 class Homework(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     assigned_to = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    problem_id = db.Column(db.Integer, db.ForeignKey('mathproblem.id'), nullable=False)
+    problem_id = db.Column(db.Integer, db.ForeignKey('math_problem.id'), nullable=False)  # Opravený název tabulky
     status = db.Column(db.String(20), default='assigned')  # 'assigned', 'submitted', 'graded'
     student_answer = db.Column(db.Text, nullable=True)
     teacher_feedback = db.Column(db.Text, nullable=True)
