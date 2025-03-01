@@ -9,7 +9,7 @@ import os
 # Inicializace aplikace
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, allow_headers=["Content-Type", "Authorization"], expose_headers="Authorization")
+CORS(app, resources={r"/*": {"origins": "https://sapssmath.w3spaces-preview.com"}}, supports_credentials=True)
 
 
 # Konfigurace databáze
@@ -22,9 +22,10 @@ jwt = JWTManager(app)
 
 @app.after_request
 def after_request(response):
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    response.headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+    response.headers["Access-Control-Allow-Origin"] = "https://sapssmath.w3spaces-preview.com"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
     return response
 
 
@@ -121,7 +122,6 @@ def get_homework():
 
 @app.route('/add_problem', methods=['OPTIONS', 'POST'])
 @jwt_required()
-@cross_origin()
 def add_problem():
     if request.method == "OPTIONS":
         return jsonify({"message": "CORS preflight OK"}), 200
