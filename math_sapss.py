@@ -120,30 +120,39 @@ def get_homework():
         'status': hw.status
     } for hw in homework_list]), 200
 
-@app.route('/add_problem', methods=['OPTIONS', 'POST'])
+@app.route('/add_problem', methods=['POST'])
 @jwt_required()
 def add_problem():
-    if request.method == "OPTIONS":
-        return jsonify({"message": "CORS preflight OK"}), 200
+    try:
+        data = request.get_json()
 
-    data = request.get_json()
+        # ✅ Ověření, že všechny hodnoty jsou stringy
+        if not isinstance(data.get("question"), str) or not isinstance(data.get("answer"), str) or not isinstance(data.get("difficulty"), str):
+            return jsonify({"message": "All fields must be strings"}), 400
 
-    current_user = get_jwt_identity()
-    user = User.query.filter_by(username=current_user).first()
+        # ✅ Ověření, že žádná hodnota není prázdná
+        if not data["question"].strip() or not data["answer"].strip() or not data["difficulty"].strip():
+            return jsonify({"message": "All fields are required"}), 400
 
-    if user.role != "teacher":
-        return jsonify({'message': 'Only teachers can add problems'}), 403
+        current_user = get_jwt_identity()
+        user = User.query.filter_by(username=current_user).first()
 
-    new_problem = MathProblem(
-        difficulty=data['difficulty'],
-        question=data['question'],
-        answer=data['answer'],
-        created_by=user.id
-    )
+        if user.role != "teacher":
+            return jsonify({'message': 'Only teachers can add problems'}), 403
 
-    db.session.add(new_problem)
-    db.session.commit()
-    return jsonify({'message': 'Problem added successfully'}), 201
+        new_problem = MathProblem(
+            difficulty=data['difficulty'],
+            question=data['question'],
+            answer=data['answer'],
+            created_by=user.id
+        )
+
+        db.session.add(new_problem)
+        db.session.commit()
+        return jsonify({'message': 'Problem added successfully'}), 201
+
+    except Exception as e:
+        return jsonify({"message": "Error processing request", "error": str(e)}), 500
     
 # Spuštění aplikace
 if __name__ == '__main__':
