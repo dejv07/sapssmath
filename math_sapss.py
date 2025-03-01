@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token
 from flask_cors import CORS
+
+
 import os
 
 app = Flask(__name__)
@@ -41,7 +43,27 @@ def login():
 @app.route('/', methods=['GET'])
 def home():
     return jsonify({'message': 'API is running'}), 200
-    
+    @app.route('/problems', methods=['GET'])
+def get_problems():
+    problems = MathProblem.query.all()
+    return jsonify([{
+        'id': problem.id,
+        'difficulty': problem.difficulty,
+        'question': problem.question,
+        'answer': problem.answer
+    } for problem in problems]), 200
+
+@app.route('/homework', methods=['GET'])
+@jwt_required()
+def get_homework():
+    current_user = get_jwt_identity()
+    homework = Homework.query.filter_by(assigned_to=current_user['username']).all()
+    return jsonify([{
+        'id': hw.id,
+        'question': hw.problem.question,
+        'status': hw.status
+    } for hw in homework]), 200
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
