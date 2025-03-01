@@ -119,10 +119,13 @@ def get_homework():
         'status': hw.status
     } for hw in homework_list]), 200
 
-@app.route('/add_problem', methods=['POST'])
+@app.route('/add_problem', methods=['OPTIONS', 'POST'])
 @jwt_required()
-@cross_origin()  # Povolení CORS pro tuto API cestu
+@cross_origin()
 def add_problem():
+    if request.method == "OPTIONS":
+        return jsonify({"message": "CORS preflight OK"}), 200
+
     data = request.get_json()
 
     current_user = get_jwt_identity()
