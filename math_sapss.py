@@ -45,6 +45,7 @@ def home():
     return jsonify({'message': 'API is running'}), 200
     @app.route('/problems', methods=['GET'])
     
+@app.route('/problems', methods=['GET'])
 def get_problems():
     problems = MathProblem.query.all()
     return jsonify([{
