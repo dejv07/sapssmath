@@ -9,7 +9,8 @@ import os
 # Inicializace aplikace
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})  # Povolení všech domén
+CORS(app, supports_credentials=True, allow_headers=["Content-Type", "Authorization"], expose_headers="Authorization")
+
 
 # Konfigurace databáze
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///math_tasks.db'
